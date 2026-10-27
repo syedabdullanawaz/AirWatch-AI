@@ -1,4 +1,4 @@
-# 🛡️ WiFi Security: AI-Powered RF Sniffer & Anomaly Detector
+#  WiFi Security: AI-Powered RF Sniffer & Anomaly Detector
 
 An edge-to-host Wi-Fi intrusion and anomaly detection system combining an **ESP8266** hardware packet sniffer with an unsupervised **Machine Learning (Isolation Forest)** analytics engine in Python.
 
@@ -6,7 +6,7 @@ The ESP8266 scans all 2.4 GHz 802.11 Wi-Fi channels (1–13) in promiscuous/stat
 
 ---
 
-## 📌 Architecture & Data Flow
+##  Architecture & Data Flow
 
 ```text
 +-------------------+      UART / USB Serial       +-----------------------+
@@ -30,7 +30,7 @@ The ESP8266 scans all 2.4 GHz 802.11 Wi-Fi channels (1–13) in promiscuous/stat
 
 ---
 
-## 🔌 Hardware Wiring & Pin Connections
+##  Hardware Wiring & Pin Connections
 
 Depending on your board version, follow the wiring instructions below:
 
@@ -48,7 +48,7 @@ If using an external USB-to-Serial TTL adapter (FTDI232 / CH340 / CP2102):
 
 | ESP8266 Pin | USB-to-TTL Adapter Pin | Notes |
 |:---|:---|:---|
-| **VCC** | **3.3V** | ⚠️ **DO NOT USE 5V** — 5V will permanently damage the ESP8266! |
+| **VCC** | **3.3V** |  **DO NOT USE 5V** - 5V will permanently damage the ESP8266! |
 | **GND** | **GND** | Common ground reference |
 | **TX** | **RX** | Transmit connects to Receive |
 | **RX** | **TX** | Receive connects to Transmit |
@@ -76,7 +76,7 @@ You can attach hardware indicators directly to the ESP8266 for physical alerting
 
 ---
 
-## 📂 Repository Structure
+##  Repository Structure
 
 ```text
 Wifi_Security/
@@ -91,7 +91,7 @@ Wifi_Security/
 
 ---
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### 1. Flash the ESP8266 Firmware
 1. Download and install the [Arduino IDE](https://www.arduino.cc/en/software).
@@ -149,7 +149,7 @@ python analyzer.py --port COM7 --baud 115200 --baseline 50
 
 ---
 
-## 🧠 Machine Learning Engine: How It Works
+##  Machine Learning Engine: How It Works
 
 1. **Feature Extraction:**
    The analyzer parses the stream for two primary RF features:
@@ -169,7 +169,7 @@ python analyzer.py --port COM7 --baud 115200 --baseline 50
 
 ---
 
-## 🔒 Security & Educational Disclaimer
+##  Security & Educational Disclaimer
 
 > [!WARNING]
 > This project is designed strictly for **authorized network monitoring, defensive security research, and educational purposes**. Always ensure you have permission to monitor wireless networks within your testing environment.
