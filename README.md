@@ -1,12 +1,12 @@
-#  WiFi Security: AI-Powered RF Sniffer & Anomaly Detector
+# 🛡️ AirWatch-AI: Wi-Fi RF Sniffer & Machine Learning Anomaly Detector
 
-An edge-to-host Wi-Fi intrusion and anomaly detection system combining an **ESP8266** hardware packet sniffer with an unsupervised **Machine Learning (Isolation Forest)** analytics engine in Python.
+An edge-to-host Wi-Fi intrusion detection and IoT security monitoring system combining an **ESP8266** hardware packet sniffer with an unsupervised **Machine Learning (Isolation Forest)** analytics engine in Python, plus optional **ThingSpeak IoT Cloud** live telemetry.
 
 The ESP8266 scans all 2.4 GHz 802.11 Wi-Fi channels (1–13) in promiscuous/station monitor mode, streams live RF telemetry (BSSID, RSSI signal strength, and channel number) over serial UART, and the host Python engine learns the ambient RF baseline to detect anomalies such as Evil Twin access points, deauthentication floods, rogue APs, and signal spoofing in real time.
 
 ---
 
-##  Architecture & Data Flow
+## 📌 Architecture & Data Flow
 
 ```text
 +-------------------+      UART / USB Serial       +-----------------------+
@@ -25,12 +25,22 @@ The ESP8266 scans all 2.4 GHz 802.11 Wi-Fi channels (1–13) in promiscuous/stat
                                             v                                     v
                                     [Normal Baseline]                  [Security Incident]
                                     Status: Normal RF                  [!!! ALERT !!!] Anomaly
-                                                                       Saved to forensics_log.csv
+                                            |                          Saved to forensics_log.csv
+                                            |                                     |
+                                            +------------------+------------------+
+                                                               |
+                                                               v (Optional)
+                                                   +-----------------------+
+                                                   |   ThingSpeak Cloud    |
+                                                   |   - Field 1: RSSI     |
+                                                   |   - Field 2: Channel  |
+                                                   |   - Field 3: Threat   |
+                                                   +-----------------------+
 ```
 
 ---
 
-##  Hardware Wiring & Pin Connections
+## 🔌 Hardware Wiring & Pin Connections
 
 Depending on your board version, follow the wiring instructions below:
 
@@ -48,7 +58,7 @@ If using an external USB-to-Serial TTL adapter (FTDI232 / CH340 / CP2102):
 
 | ESP8266 Pin | USB-to-TTL Adapter Pin | Notes |
 |:---|:---|:---|
-| **VCC** | **3.3V** |  **DO NOT USE 5V** - 5V will permanently damage the ESP8266! |
+| **VCC** | **3.3V** | ⚠️ **DO NOT USE 5V** — 5V will permanently damage the ESP8266! |
 | **GND** | **GND** | Common ground reference |
 | **TX** | **RX** | Transmit connects to Receive |
 | **RX** | **TX** | Receive connects to Transmit |
@@ -76,100 +86,88 @@ You can attach hardware indicators directly to the ESP8266 for physical alerting
 
 ---
 
-##  Repository Structure
+## 📂 Repository Structure
 
 ```text
-Wifi_Security/
+AirWatch-AI/
 ├── firmware/
-│   └── esp8266_sniffer/
-│       └── esp8266_sniffer.ino   # ESP8266 C++ Wi-Fi scanner & serial broadcaster
-├── analyzer.py                   # Python real-time ML anomaly detection engine
-├── requirements.txt              # Python library dependencies
-├── .gitignore                    # Git ignore file for temp logs & venv
-└── README.md                     # Comprehensive documentation & connection guide
+│   ├── esp8266_sniffer/
+│   │   └── esp8266_sniffer.ino       # Mode A: UART raw sniffer for Python ML
+│   └── esp8266_thingspeak/
+│       └── esp8266_thingspeak.ino    # Mode B: Direct Wi-Fi IoT Cloud broadcaster
+├── analyzer.py                       # Python real-time ML anomaly detection & ThingSpeak engine
+├── requirements.txt                  # Python dependencies (pyserial, scikit-learn, etc.)
+├── .gitignore                        # Git ignore file for temp logs & venv
+├── LICENSE                           # MIT License
+└── README.md                         # Comprehensive documentation & connection guide
 ```
 
 ---
 
-##  Getting Started
+## 🚀 Getting Started
 
 ### 1. Flash the ESP8266 Firmware
-1. Download and install the [Arduino IDE](https://www.arduino.cc/en/software).
-2. Open **File > Preferences** and add the following URL to **Additional Boards Manager URLs**:
+1. Open the [Arduino IDE](https://www.arduino.cc/en/software).
+2. Go to **File > Preferences** and add the following URL to **Additional Boards Manager URLs**:
    ```text
    http://arduino.esp8266.com/stable/package_esp8266com_index.json
    ```
-3. Go to **Tools > Board > Boards Manager**, search for `esp8266`, and click **Install**.
-4. Open [`firmware/esp8266_sniffer/esp8266_sniffer.ino`](firmware/esp8266_sniffer/esp8266_sniffer.ino).
-5. Under **Tools**, select your board (e.g. *NodeMCU 1.0 (ESP-12E Module)*) and your board's **Port** (e.g. `COM7`).
-6. Click **Upload** (Arrow icon).
+3. Install the **esp8266** board package from **Tools > Board > Boards Manager**.
+4. Choose your operational mode:
+   * **Mode A (Machine Learning Anomaly Detector):** Open [`firmware/esp8266_sniffer/esp8266_sniffer.ino`](firmware/esp8266_sniffer/esp8266_sniffer.ino), select your port (e.g. `COM7`), and upload.
+   * **Mode B (Standalone ThingSpeak IoT Node):** Open [`firmware/esp8266_thingspeak/esp8266_thingspeak.ino`](firmware/esp8266_thingspeak/esp8266_thingspeak.ino), add your Wi-Fi SSID, password, and ThingSpeak Write Key, and upload.
 
 ---
 
 ### 2. Configure Host Python Environment
 
-1. Clone the repository and navigate into the folder:
-   ```bash
-   git clone <YOUR_GITHUB_REPO_URL>
-   cd Wifi_Security
-   ```
+```bash
+# 1. Clone repository
+git clone https://github.com/syedabdullanawaz/AirWatch-AI.git
+cd AirWatch-AI
 
-2. Create and activate a Python virtual environment:
-   ```bash
-   # Windows (PowerShell)
-   python -m venv .venv
-   .\.venv\Scripts\Activate.ps1
+# 2. Setup virtual environment
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1   # On Windows
 
-   # Linux / macOS
-   python3 -m venv .venv
-   source .venv/bin/activate
-   ```
-
-3. Install required dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
+# 3. Install requirements
+pip install -r requirements.txt
+```
 
 ---
 
 ### 3. Run the Anomaly Detector
 
-Find your device COM port in Windows Device Manager (under *Ports (COM & LPT)*) and launch the analyzer:
-
+#### Standard Local Monitoring:
 ```bash
 python analyzer.py --port COM7 --baud 115200 --baseline 50
 ```
 
+#### With ThingSpeak IoT Cloud Dashboard Enabled:
+```bash
+python analyzer.py --port COM7 --thingspeak-key YOUR_WRITE_API_KEY
+```
+
 #### CLI Parameters:
-* `--port`: The serial port of your ESP8266 (e.g. `COM7` on Windows, `/dev/ttyUSB0` on Linux).
+* `--port`: Serial port of your ESP8266 (e.g. `COM7` on Windows, `/dev/ttyUSB0` on Linux).
 * `--baud`: Serial communication speed (Default: `115200`).
 * `--baseline`: Number of baseline packets to capture before activating AI detection (Default: `50`).
 * `--contamination`: Proportion of suspected outliers in the RF environment (Default: `0.1`).
 * `--log`: Path to output forensic CSV file (Default: `forensics_log.csv`).
+* `--thingspeak-key`: *(Optional)* Your ThingSpeak Channel Write API Key for live cloud streaming.
 
 ---
 
-##  Machine Learning Engine: How It Works
+## ☁️ ThingSpeak IoT Channel Fields
 
-1. **Feature Extraction:**
-   The analyzer parses the stream for two primary RF features:
-   * **RSSI ($dBm$):** Received Signal Strength Indication (typically ranges from $-90$ dBm to $-30$ dBm).
-   * **Channel:** The 2.4 GHz frequency channel ($1$ through $13$).
-
-2. **Isolation Forest Algorithm:**
-   * Isolates anomalies rather than profiling normal points.
-   * Recursively generates random partitions on the feature space.
-   * Anomalous points (e.g. sudden high-power rogue access points, unexpected channel hops, or deauthentication bursts) require significantly fewer splits to isolate, resulting in shorter average path lengths.
-
-3. **Forensic Logging:**
-   When an anomaly is flagged (`prediction == -1`), it is timestamped and recorded into `forensics_log.csv`:
-   ```csv
-   2026-10-27 16:45:10,AA:BB:CC:DD:EE:FF,-22,6,ANOMALY
-   ```
+When streaming to ThingSpeak:
+* **Field 1:** Signal Strength / RSSI ($dBm$)
+* **Field 2:** Wi-Fi Channel ($1–13$)
+* **Field 3:** Threat Status ($1$ = Anomaly Detected, $0$ = Normal)
 
 ---
 
-##  Security & Educational Disclaimer
+## 🔒 Security & Educational Disclaimer
 
 > [!WARNING]
 > This project is designed strictly for **authorized network monitoring, defensive security research, and educational purposes**. Always ensure you have permission to monitor wireless networks within your testing environment.
